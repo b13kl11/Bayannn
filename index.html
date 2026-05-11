@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>يوم مميز</title>
+    <!-- استدعاء خطوط جوجل الأنيقة -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            var(--bg-color): #E1F5FE;
+            --text-main: #01579B;
+            --text-light: #0288D1;
+            --accent-color: #03A9F4;
+            --card-bg: #FFFFFF;
+            --glow-color: rgba(3, 169, 244, 0.3);
+            --track-color: #B3E5FC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #E1F5FE;
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* خلفية ناعمة متحركة (Glow) */
+        .glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: var(--glow-color);
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -2;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+        .glow-1 { top: -50px; right: -50px; }
+        .glow-2 { bottom: -100px; left: -50px; animation-delay: -5s; }
+
+        /* الغيوم المتحركة في الخلفية */
+        .clouds-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+            animation: moveClouds linear infinite;
+        }
+
+        .bg-cloud::before, .bg-cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+        }
+
+        /* تصميم الغيمة */
+        .cloud-shape {
+            width: 120px; height: 40px;
+        }
+        .cloud-shape::before {
+            width: 50px; height: 50px; top: -25px; left: 15px;
+        }
+        .cloud-shape::after {
+            width: 60px; height: 60px; top: -30px; right: 15px;
+        }
+
+        .c1 { top: 10%; left: -150px; animation-duration: 25s; transform: scale(1.2); }
+        .c2 { top: 40%; left: -150px; animation-duration: 35s; transform: scale(0.8); animation-delay: 5s; }
+        .c3 { top: 70%; left: -150px; animation-duration: 30s; transform: scale(1.5); animation-delay: 12s; }
+        .c4 { top: 25%; left: -150px; animation-duration: 40s; transform: scale(1); animation-delay: 18s; }
+
+        @keyframes moveClouds {
+            0% { transform: translateX(-150px) scale(inherit); }
+            100% { transform: translateX(120vw) scale(inherit); }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
+        }
+
+        /* حاوية الشاشات */
+        .screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            transition: opacity 1s ease, transform 1s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        /* شاشة البداية */
+        #intro-screen {
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1.name-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            opacity: 0;
+            animation: fadeUp 1.5s ease forwards 0.5s;
+        }
+
+        .intro-text {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 4rem;
+            line-height: 1.6;
+            opacity: 0;
+            animation: fadeUp 1.5s ease forwards 1s;
+        }
+
+        /* زر الغيمة (Cloud Button) */
+        .cloud-btn-wrapper {
+            filter: drop-shadow(0 10px 15px rgba(1, 87, 155, 0.2));
+            transition: transform 0.3s ease;
+            opacity: 0;
+            animation: fadeUp 1.5s ease forwards 1.5s;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cloud-btn-wrapper:active {
+            transform: scale(0.95);
+        }
+
+        .cloud-btn {
+            background: var(--text-main);
+            color: #fff;
+            border: none;
+            width: 180px;
+            height: 60px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none; /* لمنع النقر على العناصر الداخلية */
+        }
+
+        .cloud-btn::before, .cloud-btn::after {
+            content: '';
+            position: absolute;
+            background: var(--text-main);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .cloud-btn::before {
+            width: 60px; height: 60px; top: -25px; left: 30px;
+        }
+        .cloud-btn::after {
+            width: 80px; height: 80px; top: -35px; right: 30px;
+        }
+
+        /* الشاشة الرئيسية (الرسائل) */
+        #main-screen {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            justify-content: flex-start;
+            padding-top: 4rem;
+            padding-bottom: 6rem;
+            z-index: 5;
+        }
+
+        #main-screen.active, #final-screen.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+            position: relative;
+        }
+
+        .message-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 400px;
+        }
+
+        .message-section p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        /* كروت الصوتيات */
+        .audio-cards-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin-bottom: 4rem;
+        }
+
+        .audio-card {
+            background: var(--card-bg);
+            padding: 1.2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid var(--track-color);
+            background-color: #f0f0f0; 
+        }
+
+        .audio-info {
+            flex-grow: 1;
+        }
+
+        .audio-info h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        /* شريط التقدم */
+        .progress-track {
+            width: 100%;
+            height: 4px;
+            background-color: var(--track-color);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .play-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--text-main);
+            color: #fff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(1, 87, 155, 0.2);
+        }
+
+        .play-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            margin-left: -2px;
+        }
+
+        .play-btn.playing svg {
+            margin-left: 0;
+        }
+
+        /* الشاشة الثالثة (القلب) */
+        #final-screen {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            z-index: 5;
+        }
+
+        .heart-collage {
+            position: relative;
+            width: 320px;
+            height: 380px;
+            margin: 0 auto;
+        }
+
+        .heart-text {
+            position: absolute;
+            top: 45%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+            z-index: 10;
+            width: 70%;
+            line-height: 1.5;
+        }
+
+        .h-img {
+            position: absolute;
+            width: 65px; 
+            height: 65px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 5px 15px rgba(1, 87, 155, 0.15);
+            background-color: var(--track-color);
+            z-index: 5;
+            transition: transform 0.3s;
+        }
+
+        .h-img:hover {
+            transform: scale(1.1);
+            z-index: 20;
+        }
+
+        /* توزيع الصور على شكل قلب */
+        .img1 { top: 0%; left: 25%; }        /* أعلى يسار داخلي */
+        .img2 { top: 12%; left: 0%; }         /* أعلى يسار خارجي */
+        .img3 { top: 40%; left: -5%; }        /* منتصف يسار خارجي */
+        .img4 { top: 68%; left: 15%; }        /* أسفل يسار */
+
+        .img5 { top: 0%; right: 25%; }       /* أعلى يمين داخلي */
+        .img6 { top: 12%; right: 0%; }        /* أعلى يمين خارجي */
+        .img7 { top: 40%; right: -5%; }       /* منتصف يمين خارجي */
+        .img8 { top: 68%; right: 15%; }       /* أسفل يمين */
+
+        .img9 { top: 92%; left: 50%; transform: translateX(-50%); } /* النقطة السفلية للقلب */
+
+        /* حركات الانيميشن */
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .hide-intro {
+            opacity: 0 !important;
+            transform: translateY(-20px) !important;
+            pointer-events: none;
+        }
+
+        /* زر الغيمة الثاني (بدون انيميشن ظهور متأخر) */
+        .next-btn-wrapper {
+            animation: none;
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- الغيوم والتأثيرات في الخلفية -->
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="clouds-container">
+        <div class="bg-cloud cloud-shape c1"></div>
+        <div class="bg-cloud cloud-shape c2"></div>
+        <div class="bg-cloud cloud-shape c3"></div>
+        <div class="bg-cloud cloud-shape c4"></div>
+    </div>
+
+    <!-- الشاشة الأولى -->
+    <section id="intro-screen" class="screen">
+        <h1 class="name-title">ميس</h1> 
+        <p class="intro-text">في حدا اليوم بستاهل شوي اهتمام زيادة...</p>
+        
+        <!-- زر على شكل غيمة -->
+        <div class="cloud-btn-wrapper" id="start-btn">
+            <div class="cloud-btn">اضغطي هون</div>
+        </div>
+    </section>
+
+    <!-- الشاشة الثانية (الرسائل والصوتيات) -->
+    <section id="main-screen" class="screen">
+        
+        <div class="message-section">
+            <p>كل سنة وانتي بخير...</p>
+            <p>وجودك لطيف بطريقة ما بتنوصف، وفي ناس يوم ميلادهم بيكون سبب بسيط يخلّي اليوم أحلى.</p>
+            <p>اسمعي هذي الرسايل:</p>
+        </div>
+
+        <div class="audio-cards-container">
+            <!-- كارت الصوت 1 -->
+            <div class="audio-card">
+                <img src="image-baba.jpg" alt="بابا" class="avatar">
+                <div class="audio-info">
+                    <h3>بابا</h3>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
+                </div>
+                <button class="play-btn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <audio src="audio/baba.mp3"></audio>
+            </div>
+
+            <!-- كارت الصوت 2 -->
+            <div class="audio-card">
+                <img src="image-mama.jpg" alt="ماما" class="avatar">
+                <div class="audio-info">
+                    <h3>ماما</h3>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
+                </div>
+                <button class="play-btn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <audio src="audio/mama.mp3"></audio>
+            </div>
+
+            <!-- كارت الصوت 3 -->
+            <div class="audio-card">
+                <img src="image-bayan.jpg" alt="بيان" class="avatar">
+                <div class="audio-info">
+                    <h3>بيان</h3>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
+                </div>
+                <button class="play-btn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <audio src="audio/bayan.mp3"></audio>
+            </div>
+
+            <!-- كارت الصوت 4 -->
+            <div class="audio-card">
+                <img src="image-misk.jpg" alt="مسك" class="avatar">
+                <div class="audio-info">
+                    <h3>مسك</h3>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
+                </div>
+                <button class="play-btn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <audio src="audio/misk.mp3"></audio>
+            </div>
+
+            <!-- كارت الصوت 5 -->
+            <div class="audio-card">
+                <img src="image-5.jpg" alt="شخص 5" class="avatar">
+                <div class="audio-info">
+                    <h3>شخص 5</h3>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
+                </div>
+                <button class="play-btn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <audio src="audio/5.mp3"></audio>
+            </div>
+
+            <!-- كارت الصوت 6 -->
+            <div class="audio-card">
+                <img src="image-6.jpg" alt="شخص 6" class="avatar">
+                <div class="audio-info">
+                    <h3>شخص 6</h3>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
+                </div>
+                <button class="play-btn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <audio src="audio/6.mp3"></audio>
+            </div>
+
+            <!-- كارت الصوت 7 -->
+            <div class="audio-card">
+                <img src="image-7.jpg" alt="شخص 7" class="avatar">
+                <div class="audio-info">
+                    <h3>شخص 7</h3>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
+                </div>
+                <button class="play-btn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <audio src="audio/7.mp3"></audio>
+            </div>
+        </div>
+
+        <!-- زر الانتقال للصفحة الثالثة على شكل غيمة -->
+        <div class="cloud-btn-wrapper next-btn-wrapper" id="next-btn">
+            <div class="cloud-btn">التالي</div>
+        </div>
+
+    </section>
+
+    <!-- الشاشة الثالثة والأخيرة (صور القلب) -->
+    <section id="final-screen" class="screen">
+        <div class="heart-collage">
+            <span class="heart-text">كل عام وانتي بخير يا احلى ميوسة</span>
+            
+            <!-- أضف مسارات الصور هنا -->
+            <img src="heart-img1.jpg" class="h-img img1" alt="صورة">
+            <img src="heart-img2.jpg" class="h-img img2" alt="صورة">
+            <img src="heart-img3.jpg" class="h-img img3" alt="صورة">
+            <img src="heart-img4.jpg" class="h-img img4" alt="صورة">
+            <img src="heart-img5.jpg" class="h-img img5" alt="صورة">
+            <img src="heart-img6.jpg" class="h-img img6" alt="صورة">
+            <img src="heart-img7.jpg" class="h-img img7" alt="صورة">
+            <img src="heart-img8.jpg" class="h-img img8" alt="صورة">
+            <img src="heart-img9.jpg" class="h-img img9" alt="صورة">
+        </div>
+    </section>
+
+    <!-- أكواد الجافاسكربت -->
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const introScreen = document.getElementById('intro-screen');
+        const mainScreen = document.getElementById('main-screen');
+        const finalScreen = document.getElementById('final-screen');
+
+        // الانتقال من الشاشة الأولى للثانية
+        startBtn.addEventListener('click', () => {
+            introScreen.classList.add('hide-intro');
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+                mainScreen.classList.add('active');
+                window.scrollTo(0, 0); 
+            }, 800);
+        });
+
+        // الانتقال من الشاشة الثانية للثالثة
+        nextBtn.addEventListener('click', () => {
+            mainScreen.classList.remove('active');
+            mainScreen.classList.add('hide-intro');
+            setTimeout(() => {
+                mainScreen.style.display = 'none';
+                finalScreen.classList.add('active');
+                window.scrollTo(0, 0);
+            }, 800);
+        });
+
+        const audioCards = document.querySelectorAll('.audio-card');
+        let currentPlayingAudio = null;
+        let currentPlayBtn = null;
+
+        const playIcon = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+        const pauseIcon = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
+        audioCards.forEach(card => {
+            const audio = card.querySelector('audio');
+            const playBtn = card.querySelector('.play-btn');
+            const progressFill = card.querySelector('.progress-fill');
+
+            playBtn.addEventListener('click', () => {
+                if (currentPlayingAudio && currentPlayingAudio !== audio) {
+                    currentPlayingAudio.pause();
+                    currentPlayingAudio.currentTime = 0;
+                    currentPlayBtn.innerHTML = playIcon;
+                    currentPlayBtn.classList.remove('playing');
+                }
+
+                if (audio.paused) {
+                    audio.play();
+                    playBtn.innerHTML = pauseIcon;
+                    playBtn.classList.add('playing');
+                    currentPlayingAudio = audio;
+                    currentPlayBtn = playBtn;
+                } else {
+                    audio.pause();
+                    playBtn.innerHTML = playIcon;
+                    playBtn.classList.remove('playing');
+                    currentPlayingAudio = null;
+                    currentPlayBtn = null;
+                }
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                if (audio.duration) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    progressFill.style.width = percent + '%';
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                playBtn.innerHTML = playIcon;
+                playBtn.classList.remove('playing');
+                progressFill.style.width = '0%';
+                currentPlayingAudio = null;
+                currentPlayBtn = null;
+            });
+        });
+    </script>
+</body>
+</html>
